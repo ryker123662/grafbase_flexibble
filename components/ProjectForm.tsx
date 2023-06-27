@@ -32,7 +32,6 @@ const ProjectForm = ({ type, session }: Props) => {
                     className="form_image-input"
                     onChange={handleChangeImage}
                 />
-                
             </div>
         </form>
     );
