@@ -2,6 +2,8 @@
 
 import { SessionInterface } from "@/common.types";
 import { ChangeEvent } from "react";
+import Image from "next/image";
+import FormField from "./FormField";
 
 type Props = {
     type: string;
@@ -12,7 +14,12 @@ const ProjectForm = ({ type, session }: Props) => {
     const handleFormSubmit = (e: React.FormEvent) => {};
     const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {};
 
-    const image = null;
+    const handleStateChange = (fieldName:string,value:string)=> {};
+
+    const form = {
+        image: "",
+        title: "",
+    };
 
     return (
         <form
@@ -22,7 +29,7 @@ const ProjectForm = ({ type, session }: Props) => {
                 <label
                     htmlFor="poster"
                     className="flexCenter form_image-label">
-                    {!image && "Choose a poster for your project"}
+                    {!form.image && "Choose a poster for your project"}
                 </label>
                 <input
                     id="image"
@@ -32,7 +39,22 @@ const ProjectForm = ({ type, session }: Props) => {
                     className="form_image-input"
                     onChange={handleChangeImage}
                 />
+                {!form.image && (
+                    <Image
+                        src={form?.image}
+                        className="sm:p-10 object-contain z-20"
+                        alt="Project poster"
+                        fill
+                    />
+                )}
             </div>
+
+            <FormField
+                title="Title"
+                state={form.title}
+                placeholder="Project title"
+                setState={(value)=> handleStateChange("title", value)}
+            />
         </form>
     );
 };
