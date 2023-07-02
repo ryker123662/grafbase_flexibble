@@ -1,9 +1,12 @@
 "use client";
 
 import { SessionInterface } from "@/common.types";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import Image from "next/image";
 import FormField from "./FormField";
+import { categoryFilters } from "@/constants";
+import CustomMenu from "./CustomMenu";
+import Button from "./Button";
 
 type Props = {
     type: string;
@@ -12,14 +15,45 @@ type Props = {
 
 const ProjectForm = ({ type, session }: Props) => {
     const handleFormSubmit = (e: React.FormEvent) => {};
-    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {};
 
-    const handleStateChange = (fieldName:string,value:string)=> {};
+    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
 
-    const form = {
-        image: "",
-        title: "",
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        if (!file.type.includes("image")) {
+            return alert("Please upload an image file");
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onloadend = () => {
+            const result = reader.result as string;
+
+            handleStateChange("image", result);
+        };
     };
+
+    const handleStateChange = (fieldName: string, value: string) => {
+        setForm((prevState) => ({
+            ...prevState,
+            [fieldName]: value,
+        }));
+    };
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [form, setForm] = useState({
+        title: "",
+        description: "",
+        image: "",
+        liveSiteUrl: "",
+        githubUrl: "",
+        category: "",
+    });
 
     return (
         <form
@@ -39,7 +73,7 @@ const ProjectForm = ({ type, session }: Props) => {
                     className="form_image-input"
                     onChange={handleChangeImage}
                 />
-                {!form.image && (
+                {form.image && (
                     <Image
                         src={form?.image}
                         className="sm:p-10 object-contain z-20"
@@ -52,9 +86,49 @@ const ProjectForm = ({ type, session }: Props) => {
             <FormField
                 title="Title"
                 state={form.title}
-                placeholder="Project title"
-                setState={(value)=> handleStateChange("title", value)}
+                placeholder="Flexibble"
+                setState={(value) => handleStateChange("title", value)}
             />
+            <FormField
+                title="Description"
+                state={form.description}
+                placeholder="Showcase and discover the latest work from top online portfolios by creative professionals across industries."
+                setState={(value) => handleStateChange("description", value)}
+            />
+            <FormField
+                type="url"
+                title="Website URL"
+                state={form.liveSiteUrl}
+                placeholder="https://portfolio-janicki.vercel.app/"
+                setState={(value) => handleStateChange("title", value)}
+            />
+            <FormField
+                type="url"
+                title="GitHub URL"
+                state={form.githubUrl}
+                placeholder="https://github.com/ryker123662"
+                setState={(value) => handleStateChange("githubUrl", value)}
+            />
+
+            <CustomMenu
+                title="category"
+                state={form.category}
+                filters={categoryFilters}
+                setState={(value) => handleStateChange("category", value)}
+            />
+
+            <div className="flexStart w-full">
+                <Button
+                    title={
+                        isSubmitting
+                            ? `${type === "create" ? "Creating" : "Editing"}`
+                            : `${type === "create" ? "Create" : "Edit"}`
+                    }
+                    type="submit"
+                    leftIcon={isSubmitting ? "" : "/plus.svg"}
+                    isSubmitting={isSubmitting}
+                />
+            </div>
         </form>
     );
 };
