@@ -1,20 +1,60 @@
 "use client";
 
-import { SessionInterface } from "@/common.types";
-import { ChangeEvent, useState } from "react";
+import { SessionInterface, ProjectInterface } from "@/common.types";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Image from "next/image";
 import FormField from "./FormField";
 import { categoryFilters } from "@/constants";
 import CustomMenu from "./CustomMenu";
 import Button from "./Button";
+import { createNewProject, fetchToken } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 type Props = {
     type: string;
     session: SessionInterface;
+    project?: ProjectInterface;
 };
 
 const ProjectForm = ({ type, session }: Props) => {
-    const handleFormSubmit = (e: React.FormEvent) => {};
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const router = useRouter();
+
+    const [form, setForm] = useState({
+        title: "",
+        description: "",
+        image: "",
+        liveSiteUrl: "",
+        githubUrl: "",
+        category: "",
+    });
+
+    const handleFormSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        setIsSubmitting(true);
+
+        const { token } = await fetchToken();
+
+        try {
+            if (type === "create") {
+                await createNewProject(form, session?.user?.id, token);
+
+                router.push("/");
+            }
+
+            // if (type === "edit") {
+            //     await updateProject(form, project?.id as string, token);
+
+            //     router.push("/");
+            // }
+        } catch (error) {
+            alert(`Failed to ${type === "create" ? "create" : "edit"} a project. Try again!`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -43,17 +83,6 @@ const ProjectForm = ({ type, session }: Props) => {
             [fieldName]: value,
         }));
     };
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [form, setForm] = useState({
-        title: "",
-        description: "",
-        image: "",
-        liveSiteUrl: "",
-        githubUrl: "",
-        category: "",
-    });
 
     return (
         <form
@@ -100,7 +129,7 @@ const ProjectForm = ({ type, session }: Props) => {
                 title="Website URL"
                 state={form.liveSiteUrl}
                 placeholder="https://portfolio-janicki.vercel.app/"
-                setState={(value) => handleStateChange("title", value)}
+                setState={(value) => handleStateChange("liveSiteUrl", value)}
             />
             <FormField
                 type="url"
