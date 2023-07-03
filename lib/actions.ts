@@ -2,6 +2,8 @@ import { ProjectForm } from "@/common.types";
 import {
     createProjectMutation,
     createUserMutation,
+    getProjectByIdQuery,
+    getProjectsOfUserQuery,
     getUserQuery,
     projectsQuery,
 } from "@/graphql";
@@ -58,12 +60,13 @@ export const uploadImage = async (imagePath: string) => {
     try {
         const response = await fetch(`${serverUrl}/api/upload`, {
             method: "POST",
-            body: JSON.stringify({ path: imagePath }),
+            body: JSON.stringify({
+                path: imagePath,
+            }),
         });
-
         return response.json();
-    } catch (error) {
-        throw error;
+    } catch (err) {
+        throw err;
     }
 };
 
@@ -95,4 +98,16 @@ export const fetchAllProjects = async (category?: string, endcursor?: string) =>
     client.setHeader("x-api-key", apiKey);
 
     return makeGraphQlRequest(projectsQuery, { category, endcursor });
+};
+
+export const getProjectDetails = async (id: string) => {
+    client.setHeader("x-api-key", apiKey);
+
+    return makeGraphQlRequest(getProjectByIdQuery, { id });
+};
+
+export const getUserProjects = async (id: string, last?: number) => {
+    client.setHeader("x-api-key", apiKey);
+
+    return makeGraphQlRequest(getProjectsOfUserQuery, { id, last });
 };
