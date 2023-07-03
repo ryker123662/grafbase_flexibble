@@ -96,7 +96,10 @@ export const createNewProject = async (
     }
 };
 
-export const fetchAllProjects = async (category?: string, endcursor?: string) => {
+export const fetchAllProjects = async (
+    category?: string | null,
+    endcursor?: string | null
+) => {
     client.setHeader("x-api-key", apiKey);
 
     return makeGraphQlRequest(projectsQuery, { category, endcursor });
