@@ -29,6 +29,34 @@ const ProjectForm = ({ type, session, project }: Props) => {
         category: project?.category || "",
     });
 
+    const handleStateChange = (fieldName: string, value: string) => {
+        setForm((prevState) => ({
+            ...prevState,
+            [fieldName]: value,
+        }));
+    };
+
+    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        if (!file.type.includes("image")) {
+            return alert("Please upload an image file");
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onloadend = () => {
+            const result = reader.result as string;
+
+            handleStateChange("image", result);
+        };
+    };
+
     const handleFormSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -53,34 +81,6 @@ const ProjectForm = ({ type, session, project }: Props) => {
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-
-        const file = e.target.files?.[0];
-
-        if (!file) return;
-
-        if (!file.type.includes("image")) {
-            return alert("Please upload an image file");
-        }
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onloadend = () => {
-            const result = reader.result as string;
-
-            handleStateChange("image", result);
-        };
-    };
-
-    const handleStateChange = (fieldName: string, value: string) => {
-        setForm((prevState) => ({
-            ...prevState,
-            [fieldName]: value,
-        }));
     };
 
     return (
