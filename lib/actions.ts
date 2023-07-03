@@ -120,7 +120,6 @@ export const deleteProject = async (id: string, token: string) => {
     return makeGraphQlRequest(deleteProjectMutation, { id });
 };
 
-
 // Update project
 export const updateProject = async (form: ProjectForm, projectId: string, token: string) => {
     function isBase64DataURL(value: string) {
