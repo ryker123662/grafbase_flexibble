@@ -19,7 +19,7 @@ const apiUrl = isProduction
 
 const apiKey = isProduction ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY || "" : "letmein";
 
-const serverUrl = isProduction ? process.env.NEXT_PUBLIC_SERVER_URL : "http://localhost:3000";
+const serverUrl = isProduction ? process.env.NEXTAUTH_URL : "http://localhost:3000";
 
 const client = new GraphQLClient(apiUrl);
 
@@ -96,6 +96,7 @@ export const createNewProject = async (
     }
 };
 
+// Get all projects
 export const fetchAllProjects = async (
     category?: string | null,
     endcursor?: string | null
@@ -105,18 +106,21 @@ export const fetchAllProjects = async (
     return makeGraphQlRequest(projectsQuery, { category, endcursor });
 };
 
+// Get project details
 export const getProjectDetails = async (id: string) => {
     client.setHeader("x-api-key", apiKey);
 
     return makeGraphQlRequest(getProjectByIdQuery, { id });
 };
 
+// Get projects of a user
 export const getUserProjects = async (id: string, last?: number) => {
     client.setHeader("x-api-key", apiKey);
 
     return makeGraphQlRequest(getProjectsOfUserQuery, { id, last });
 };
 
+// Delete project
 export const deleteProject = async (id: string, token: string) => {
     client.setHeader("Authorization", `Bearer ${token}`);
 
